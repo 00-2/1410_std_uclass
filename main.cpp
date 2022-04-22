@@ -1,42 +1,51 @@
-#include <iostream>
 #include <array>
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #include "Student.h"
 
 int main() {
-    std::array<int, 4> marks = {1,2,3,4};
-    Student s("ИВАНОВ", "two", "three", marks);
-    std::cout << s;
-    Student s1 = s;
-    std::cout << s1 << std::endl;
-    Student s2(Student("ЖДАНОВ","1","2",{1,1,3,4}));
-    std::cout << s2 << std::endl << s << std::endl;
-    std::vector<Student> vec_input{s,s1,s2};
+    // count of Students
+    int n = 0;
+    std::string temp_fio, temp_facult, temp_record_book_num;
+    std::array<int, 4> temp_marks;
 
-    std::cout << "DATA FROM VECTOR" << std::endl;
-    for (auto student : vec_input){
-        std::cout << student << std::endl;
+    std::ifstream fin("input.txt");
+    fin >> n;
+    std::vector<Student> vec_input;
+    vec_input.reserve(n);
+    for(int i = 0;i<n;++i){
+        fin >> temp_fio >> temp_facult >> temp_record_book_num;
+        fin >> temp_marks[0] >> temp_marks[1] >> temp_marks[2] >> temp_marks[3];
+        vec_input.push_back(Student(temp_fio, temp_facult, temp_record_book_num, temp_marks));
     }
-    std::vector<Student> vec_second;
-    vec_second.reserve(3);
-    std::copy(vec_input.begin(), vec_input.end(), std::back_inserter(vec_second));
-    std::cout << "DATA FROM VECTOR(COPY)" << std::endl;
-    for (auto student : vec_second){
-        std::cout << student << std::endl;
-    }
+    fin.close();
+    // копируем - сортируем - выводим
+    std::vector<Student> vec_sorted;
+    vec_sorted.reserve(n);
+    std::copy(vec_input.begin(), vec_input.end(), std::back_inserter(vec_sorted));
+    std::sort(vec_sorted.begin(), vec_sorted.end());
+    // создаем деку, копируем
     std::deque<Student> deq;
     std::copy(vec_input.begin(), vec_input.end(),  std::back_inserter(deq));
-    std::cout << "DATA FROM DEQUE" << std::endl;
-    for (auto student : deq){
-        std::cout << student << std::endl;
+
+
+    std::ofstream fout("output.txt");
+    fout << "Исходный вектор:" << std::endl;
+    for (int i = 0; i<n; ++i){
+        fout << vec_input[i];
     }
-    std::sort(vec_second.begin(), vec_second.end());
-    std::cout << "SORTED VECTOR" << std::endl;
-    for (auto student : vec_second){
-        std::cout << student << std::endl;
+    fout << "Сортированный вектор:" << std::endl;
+    for (int i = 0; i<n; ++i){
+        fout << vec_sorted[i];
     }
+    fout << "Скопированная очередь:" << std::endl;
+    for (int i = 0; i<n; ++i){
+        fout << deq[i];
+    }
+    fout.close();
 
 
     return 0;
